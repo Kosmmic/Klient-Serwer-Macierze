@@ -1,0 +1,5 @@
+# Automatyczne wykrywanie plików tekstowych i wymuszenie formatu LF (Linux)
+* text=auto eol=lf
+
+# Wymuszenie zachowania tabulatorów w pliku Makefile
+Makefile text eol=lf
