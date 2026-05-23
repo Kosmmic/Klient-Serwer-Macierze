@@ -3,3 +3,7 @@
 
 # Wymuszenie zachowania tabulatorów w pliku Makefile
 Makefile text eol=lf
+
+#Wymyszenie wykrywania plikow .c i .h jako jezyk C dla statystyk Githuba
+*.c linguist-language=C
+*.h linguist-language=C
