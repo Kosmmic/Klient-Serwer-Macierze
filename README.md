@@ -1,56 +1,53 @@
-# Współbieżny Serwer Obliczeniowy IPC (C / Linux)
+Language: [English] | [Po polsku](README.pl.md)
 
-Projekt realizuje system klient-serwer w środowisku tekstowym Linux przy użyciu mechanizmów IPC standardu System V oraz asynchroniczne zarządzanie procesami w systemie POSIX.
+---
 
-## Funkcjonalności
-* **Współbieżny Serwer**: Obsługuje wielu klientów jednocześnie za pomocą procesów potomnych (`fork()`). Posiada mechanizm automatycznego czyszczenia procesów zombie (`SIGCHLD`).
-* **Komunikacja System V**: Wymiana danych (macierzy oraz wyników) realizowana jest przez systemowe kolejki komunikatów (`msgget`, `msgsnd`, `msgrcv`).
-* **Tekstowy Interfejs Użytkownika (TUI)**: Klient posiada dynamiczny interfejs zbudowany w oparciu o bibliotekę `ncurses`.
+# Concurrent IPC Computing Server (C / Linux)
 
-### 1. Warstwa komunikacji (Kolejki komunikatów System V)
-Wymiana informacji odbywa się przez pojedynczą, systemową kolejkę komunikatów, identyfikowaną unikalnym kluczem numerycznym. Kolejka działa jako asynchroniczny bufor FIFO (First-In, First-Out), który obsługuje dwa rodzaje komunikatów (identyfikowane przez pole `mtype` typu `long`):
-*   **Mtype = 1 (Żądanie obliczeniowe)**: Klient umieszcza w kolejce strukturę zawierającą swój unikalny identyfikator procesu (PID), wymiary macierzy ($M \times N$) oraz dwuwymiarową tablicę wartości rzeczywistych (`double`).
-*   **Mtype = PID Klienta (Odpowiedź)**: Serwer odsyła strukturę z obliczonym wynikiem (suma elementów). Zastosowanie PID jako typu komunikatu pozwala na pełną izolację danych – w środowisku wieloklienckim każdy klient wybiera z kolejki wyłącznie paczkę zwrotną dedykowaną dla niego.
+This project implements a client-server system in a Linux environment using System V IPC mechanisms and asynchronous process management in POSIX.
 
-### 2. Współbieżność serwera i eliminacja procesów zombie
-Główny proces serwera (rodzic) działa w nieskończonej pętli, blokując się na funkcji `msgrcv()` i oczekując na komunikaty typu `1`. Po odebraniu struktury, serwer nie wykonuje obliczeń sekwencyjnie. Natychmiast wywołuje funkcję systemową `fork()`, tworząc odizolowany proces potomny (dziecko):
-*   **Proces główny (rodzic)**: Natychmiast powraca na początek pętli do funkcji `msgrcv()`, zachowując pełną responsywność na nowe żądania od innych klientów.
-*   **Proces potomny (dziecko)**: Przejmuje kopię danych komunikatu, wykonuje algorytm sumowania macierzy, wysyła wynik funkcją `msgsnd()` z `mtype = PID` i kończy działanie poprzez `exit(0)`.
+## Features
+* **Concurrent Server:** Handles multiple clients simultaneously using child processes (`fork()`). Features an automatic cleanup mechanism for zombie processes via `SIGCHLD`.
+* **System V Communication:** Data exchange (matrices and computation results) is handled via system message queues (`msgget`, `msgsnd`, `msgrcv`).
+* **Text User Interface (TUI):** The client features a dynamic text interface built using the `ncurses` library.
 
-## Wymagania systemowe
-* System operacyjny: **Linux**
-* Kompilator: `gcc`
-* Biblioteka deweloperska: `libncurses-dev` (lub odpowiednik dla danej dystrybucji)
+### 1. Communication Layer (System V Message Queues)
+Information exchange takes place through a single system message queue identified by a unique numerical key. The queue acts as an asynchronous FIFO (First-In, First-Out) buffer that handles two types of messages (identified by the `long mtype` field):
+* **Mtype = 1 (Computation Request):** The client places a structure in the queue containing its unique Process Identifier (PID), matrix dimensions ($M \times N$), and a two-dimensional array of real numbers (`double`).
+* **Mtype = Client's PID (Response):** The server sends back a structure containing the computed result (sum of elements). Using the PID as the message type ensures complete data isolation—in a multi-client environment, each client retrieves only the response packet dedicated to them.
 
-W systemach Ubuntu/Debian bibliotekę ncurses zainstalujesz poleceniem:
+### 2. Server Concurrency and Zombie Process Elimination
+The main server process (parent) runs in an infinite loop, blocking on the `msgrcv()` function while waiting for messages of type 1. Upon receiving a structure, the server does not perform computations sequentially. Instead, it immediately calls the `fork()` system function to create an isolated child process:
+* **Main Process (Parent):** Instantly returns to the beginning of the loop to wait for new requests via `msgrcv()`, remaining fully responsive to other clients.
+* **Child Process:** Inherits a copy of the message data, executes the matrix summation algorithm, sends the result using `msgsnd()` with `mtype = PID`, and terminates via `exit(0)`.
+
+## System Requirements
+* Operating System: **Linux**
+* Compiler: `gcc`
+* Developer Library: `libncurses-dev` (or equivalent for your distribution)
+
+On Ubuntu/Debian, install the ncurses library with:
 ```bash
 sudo apt update && sudo apt install libncurses5-dev libncursesw5-dev
 ```
 
-## Kompilacja projektu
-Projekt zawiera plik `Makefile`. Aby skompilować oba programy, wpisz w terminalu:
+## Compilation
+The project includes a `Makefile`. To compile both programs, run:
 ```bash
 make
 ```
-Aby wyczyścić pliki binarne:
+To clean up binary files, run:
 ```bash
 make clean
 ```
 
-## Uruchomienie i testowanie
-Mechanizm IPC wymaga, aby **najpierw** uruchomić serwer:
+## Running the Application
+The IPC mechanism requires the server to be started **first**:
+1. In the first terminal window, start the server: `./serwer`
+2. In a second window (or multiple separate windows), start the client: `./klient`
 
-1. W pierwszym oknie terminala uruchom serwer:
-   ```bash
-   ./serwer
-   ```
-2. W drugim (lub kilku osobnych oknach) uruchom klienta:
-   ```bash
-   ./klient
-   ```
-
-## Struktura plików
-* `serwer.c` - kod źródłowy współbieżnego serwera.
-* `klient.c` - kod źródłowy klienta z interfejsem TUI (ncurses).
-* `wspolny.h` - wspólny plik nagłówkowy zawierający definicje struktur IPC oraz klucz kolejki.
-* `Makefile` - skrypt automatyzujący proces kompilacji.
+## File Structure
+* `serwer.c` – Source code for the concurrent server.
+* `klient.c` – Source code for the client with the TUI interface (`ncurses`).
+* `wspolny.h` – Common header file containing IPC structure definitions and the queue key.
+* `Makefile` – Script automating the compilation process.
