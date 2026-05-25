@@ -1,12 +1,12 @@
-# Pliki binarne generowane przez kompilator
+# Binary files
 serwer
 klient
 
-# Pliki obiektowe i tymczasowe kompilacji
+# Object and tmp files
 *.o
 *.out
 
-# Pliki tymczasowe edytorów (np. VS Code)
+# VS Code editor files
 .vscode/
 *.swp
 *~

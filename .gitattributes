@@ -1,9 +1,9 @@
-# Automatyczne wykrywanie plików tekstowych i wymuszenie formatu LF (Linux)
+# Auto detect text files and normalize line endings to LF
 * text=auto eol=lf
 
-# Wymuszenie zachowania tabulatorów w pliku Makefile
+# Enforce tabs in MakeFile for proper formatting
 Makefile text eol=lf
 
-#Wymyszenie wykrywania plikow .c i .h jako jezyk C dla statystyk Githuba
+# Set C source and header files to be treated as C language for syntax highlighting
 *.c linguist-language=C
 *.h linguist-language=C
