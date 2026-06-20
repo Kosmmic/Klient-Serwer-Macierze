@@ -54,7 +54,7 @@ int main() {
 		if(pid ==0){
 			// --- Child Process Context ---
 
-			printf("[Server-Child %d] Received data from client with PID: %d\n", getpid(), (int)received_msg.klient_pid);
+			printf("[Server-Child %d] Received data from client with PID: %d\n", getpid(), (int)received_msg.client_pid);
 			total_sum = 0.0;
 			for(int i=0;i<received_msg.m;i++){
 				for(int j=0;j<received_msg.n;j++){
@@ -63,7 +63,7 @@ int main() {
 			}
 
 			// Route response back specifically to the requesting client's PID
-			response_msg.mtype = received_msg.klient_pid;
+			response_msg.mtype = received_msg.client_pid;
 			response_msg.total_sum = total_sum;
 
 			if (msgsnd(msgid, &response_msg, sizeof(response_msg) - sizeof(long), 0) == -1){

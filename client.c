@@ -10,7 +10,7 @@
 int main() {
 	int msgid;
 	struct msg_to_server my_message;
-	struct msg_do_klienta response_message;
+	struct msg_to_client response_message;
 	pid_t my_pid = getpid();
 
 	initscr();
@@ -45,21 +45,21 @@ int main() {
 	}
 
 	mvprintw(6,2, "Wprowadz elementy macierzy:");
-	int linia =7;
+	int line =7;
 	for(int i=0; i<my_message.m;i++){
 		for(int j=0;j<my_message.n;j++){
-			mvprintw(linia, 4, "Element [%d][%d]: ", i, j);
+			mvprintw(line, 4, "Element [%d][%d]: ", i, j);
 			refresh();
 			scanw("%lf", &my_message.tablica[i][j]);
-			linia++;
+			line++;
 		}
 	}
 	noecho();
 
 	my_message.mtype=1;
-	my_message.klient_pid = my_pid;
+	my_message.client_pid = my_pid;
 
-	mvprintw(linia+1, 2, "Wysylam dane do serwera i czekam na wynik...");
+	mvprintw(line+1, 2, "Wysylam dane do serwera i czekam na wynik...");
 	refresh();
 
 	if(msgsnd(msgid, &my_message, sizeof(my_message)-sizeof(long), 0) == -1){
@@ -76,7 +76,7 @@ int main() {
 	clear();
 	mvprintw(2,2, "===WYNIK PRZETWARZANIA SERWERA===");
 	mvprintw(4,2, "Orzymano odpowiedz dla klienta o PID: %d", my_pid);
-	mvprintw(5,2, "Obliczona przez wspolbiezny serwer suma wynosi: %f", response_message.suma);
+	mvprintw(5,2, "Obliczona przez wspolbiezny serwer suma wynosi: %f", response_message.total_sum);
 	mvprintw(7, 2, "Nacisnij dowolny klawisz, aby zamknac program...");
 	refresh();
 

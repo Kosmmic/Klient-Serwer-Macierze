@@ -1,9 +1,9 @@
 all: serwer klient
 
-serwer: serwer.c common.h
+serwer: server.c common.h
 	gcc server.c -o serwer
 
-klient: klient.c common.h
+klient: client.c common.h
 	gcc client.c -o klient -lncurses
 
 clean: 

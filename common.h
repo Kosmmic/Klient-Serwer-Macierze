@@ -18,7 +18,7 @@ struct msg_to_server {
 
 struct msg_to_client {
 	long mtype;
-	double suma;
+	double total_sum;
 };
 
 #endif
