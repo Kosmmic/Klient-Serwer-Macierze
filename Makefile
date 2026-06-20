@@ -1,10 +1,10 @@
 all: serwer klient
 
-serwer: serwer.c wspolny.h
-	gcc serwer.c -o serwer
+serwer: serwer.c common.h
+	gcc server.c -o serwer
 
-klient: klient.c wspolny.h
-	gcc klient.c -o klient -lncurses
+klient: klient.c common.h
+	gcc client.c -o klient -lncurses
 
 clean: 
 	rm -f serwer klient
